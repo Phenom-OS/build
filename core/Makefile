@@ -1,4 +1,13 @@
 # Put some miscellaneous rules here
+#
+# Build system colors
+#
+# PFX: Prefix "target C++:" in yellow
+# INS: Module "Install:" output color (cyan for ics)
+
+ifneq ($(BUILD_WITH_COLORS),0)
+    include $(TOP_DIR)build/core/colors.mk
+endif
 
 # HACK: clear LOCAL_PATH from including last build target before calling
 # intermedites-dir-for
@@ -2524,14 +2533,20 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) \
 	   $(if $(OEM_OTA_CONFIG), -o $(OEM_OTA_CONFIG)) \
 	   $(BUILT_TARGET_FILES_PACKAGE) $@
 
-CUSTOM_TARGET_PACKAGE := $(PRODUCT_OUT)/$(TARGET_PRODUCT).zip
+PHENOM_TARGET_PACKAGE := $(PRODUCT_OUT)/$(PHENOM_VERSION).zip
 
-.PHONY: otapackage bacon
+.PHONY: otapackage bacon phenom
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
 bacon: otapackage
-	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(CUSTOM_TARGET_PACKAGE)
-	$(hide) $(MD5SUM) $(CUSTOM_TARGET_PACKAGE) > $(CUSTOM_TARGET_PACKAGE).md5sum
-	@echo -e "Package complete: $(CUSTOM_TARGET_PACKAGE)"
+	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(PHENOM_TARGET_PACKAGE)
+	$(hide) $(MD5SUM) $(PHENOM_TARGET_PACKAGE) > $(PHENOM_TARGET_PACKAGE).md5sum
+	@echo -e "Package complete: $(PHENOM_TARGET_PACKAGE)"
+phenom: otapackage
+	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(PHENOM_TARGET_PACKAGE)
+	$(hide) $(MD5SUM) $(PHENOM_TARGET_PACKAGE) > $(PHENOM_TARGET_PACKAGE).md5sum
+	@echo -e ${CL_RED}""${CL_RED}
+	@echo -e ${CL_RED}"  PHENOM OPEN SOURCE PROJECT  "${CL_RED}
+	@echo -e "Package complete: $(PHENOM_TARGET_PACKAGE)"
 
 endif    # build_ota_package
 

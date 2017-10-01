@@ -1,4 +1,3 @@
-
 # List of variables we want to print in the build banner.
 print_build_config_vars := \
   PLATFORM_VERSION_CODENAME \
@@ -78,7 +77,11 @@ ifdef dumpvar_goals
   absolute_dumpvar := $(strip $(filter abs-%,$(dumpvar_goals)))
   ifdef absolute_dumpvar
     dumpvar_goals := $(patsubst abs-%,%,$(dumpvar_goals))
-    DUMPVAR_VALUE := $(abspath $($(dumpvar_goals)))
+    ifneq ($(filter /%,$($(dumpvar_goals))),)
+      DUMPVAR_VALUE := $($(dumpvar_goals))
+    else
+      DUMPVAR_VALUE := $(PWD)/$($(dumpvar_goals))
+    endif
     dumpvar_target := dumpvar-abs-$(dumpvar_goals)
   else
     DUMPVAR_VALUE := $($(dumpvar_goals))
@@ -93,13 +96,6 @@ endif # dumpvar_goals
 
 ifneq ($(dumpvar_goals),report_config)
 PRINT_BUILD_CONFIG:=
-endif
-
-ifneq ($(filter report_config,$(DUMP_MANY_VARS)),)
-# Construct the shell commands that print the config banner.
-report_config_sh := echo '============================================';
-report_config_sh += $(foreach v,$(print_build_config_vars),echo '$v=$($(v))';)
-report_config_sh += echo '============================================';
 endif
 
 # Dump mulitple variables to "<var>=<value>" pairs, one per line.
@@ -124,8 +120,33 @@ endif
 endif # CALLED_FROM_SETUP
 
 ifneq ($(PRINT_BUILD_CONFIG),)
-$(info ============================================)
-$(foreach v, $(print_build_config_vars),\
-  $(info $v=$($(v))))
-$(info ============================================)
+HOST_OS_EXTRA:=$(shell python -c "import platform; print(platform.platform())")
+ifneq ($(BUILD_WITH_COLORS),0)
+    include $(TOP_DIR)build/core/colors.mk
+endif
+$(info $(CLR_RED)=====================================================$(CLR_RST))
+$(info $(CLR_BLU)  HOST_ARCH = $(CLR_RED)$(HOST_ARCH)$(CLR_RST))
+$(info $(CLR_BLU)  HOST_OS = $(CLR_RED)$(HOST_OS)$(CLR_RST))
+$(info $(CLR_BLU)  HOST_BUILD_TYPE = $(CLR_RED)$(HOST_BUILD_TYPE)$(CLR_RST))
+$(info $(CLR_BLU)  HOST_OS_EXTRA = $(CLR_RED)$(HOST_OS_EXTRA)$(CLR_RST))
+$(info $(CLR_BLU)  OUT_DIR = $(CLR_RED)$(OUT_DIR)$(CLR_RST))
+$(info $(CLR_RED)=======================================================$(CLR_RST))
+$(info $(CLR_BLU)  PLATFORM_VERSION_CODENAME = $(CLR_RED)$(PLATFORM_VERSION_CODENAME)$(CLR_RST))
+$(info $(CLR_BLU)  PLATFORM_VERSION = $(CLR_RED)$(PLATFORM_VERSION)$(CLR_RST))
+$(info $(CLR_BLU)  $(CLR_BOLD)$(CLR_MAG)PHENOM_VERSION = $(CLR_RED)$(PHENOM_VERSION)$(CLR_RST)$(CLR_RST))
+$(info $(CLR_BLU)  TARGET_PRODUCT = $(CLR_RED)$(TARGET_PRODUCT)$(CLR_RST))
+$(info $(CLR_BLU)  TARGET_BUILD_VARIANT = $(CLR_RED)$(TARGET_BUILD_VARIANT)$(CLR_RST))
+$(info $(CLR_BLU)  TARGET_BUILD_TYPE = $(CLR_RED)$(TARGET_BUILD_TYPE)$(CLR_RST))
+$(info $(CLR_BLU)  TARGET_ARCH = $(CLR_RED)$(TARGET_ARCH)$(CLR_RST))
+$(info $(CLR_BLU)  TARGET_ARCH_VARIANT = $(CLR_RED)$(TARGET_ARCH_VARIANT)$(CLR_RST))
+$(info $(CLR_BLU)  TARGET_CPU_VARIANT = $(CLR_RED)$(TARGET_CPU_VARIANT)$(CLR_RST))
+$(info $(CLR_RED)=======================================================$(CLR_RST))
+$(info $(CLR_BLU)  TARGET_GCC_VERSION = $(CLR_RED)$(TARGET_GCC_VERSION)$(CLR_RST))
+$(info $(CLR_BLU)  TARGET_NDK_GCC_VERSION = $(CLR_RED)$(TARGET_NDK_GCC_VERSION)$(CLR_RST))
+ifdef TARGET_GCC_VERSION_ARM
+$(info $(CLR_BLU)  TARGET_KERNEL_TOOLCHAIN = $(CLR_RED)$(TARGET_GCC_VERSION_ARM)$(CLR_RST))
+else
+$(info $(CLR_BLU)  TARGET_KERNEL_TOOLCHAIN = $(CLR_RED)$(TARGET_GCC_VERSION)$(CLR_RST))
+endif
+$(info $(CLR_RED)=======================================================$(CLR_RST))
 endif
