@@ -496,16 +496,7 @@ function print_lunch_menu()
     echo ""
     tput setaf 1;
     tput bold;
-    echo "  ▄████ ▒███████▒ ▒█████    ██████  ██▓███  "
-    echo " ██▒ ▀█▒▒ ▒ ▒ ▄▀░▒██▒  ██▒▒██    ▒ ▓██░  ██▒"
-    echo "▒██░▄▄▄░░ ▒ ▄▀▒░ ▒██░  ██▒░ ▓██▄   ▓██░ ██▓▒"
-    echo "░▓█  ██▓  ▄▀▒   ░▒██   ██░  ▒   ██▒▒██▄█▓▒ ▒"
-    echo "░▒▓███▀▒▒███████▒░ ████▓▒░▒██████▒▒▒██▒ ░  ░"
-    echo " ░▒   ▒ ░▒▒ ▓░▒░▒░ ▒░▒░▒░ ▒ ▒▓▒ ▒ ░▒▓▒░ ░  ░"
-    echo "  ░   ░ ░░▒ ▒ ░ ▒  ░ ▒ ▒░ ░ ░▒  ░ ░░▒ ░     "
-    echo "░ ░   ░ ░ ░ ░ ░ ░░ ░ ░ ▒  ░  ░  ░  ░░       "
-    echo "      ░   ░ ░        ░ ░        ░           "
-    echo "        ░                                   "
+    echo "                               PHENOM OS                              "
     tput sgr0;
     echo ""
     echo "                      Welcome to the device menu                      "
