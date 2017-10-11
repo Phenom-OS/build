@@ -1,29 +1,3 @@
-function hmm() {
-cat <<EOF
-Invoke ". build/envsetup.sh" from your shell to add the following functions to your environment:
-- lunch:     lunch <product_name>-<build_variant>
-- tapas:     tapas [<App1> <App2> ...] [arm|x86|mips|armv5|arm64|x86_64|mips64] [eng|userdebug|user]
-- croot:     Changes directory to the top of the tree.
-- m:         Makes from the top of the tree.
-- mm:        Builds all of the modules in the current directory, but not their dependencies.
-- mmm:       Builds all of the modules in the supplied directories, but not their dependencies.
-             To limit the modules being built use the syntax: mmm dir/:target1,target2.
-- mma:       Builds all of the modules in the current directory, and their dependencies.
-- mmma:      Builds all of the modules in the supplied directories, and their dependencies.
-- provision: Flash device with all required partitions. Options will be passed on to fastboot.
-- cgrep:     Greps on all local C/C++ files.
-- ggrep:     Greps on all local Gradle files.
-- jgrep:     Greps on all local Java files.
-- resgrep:   Greps on all local res/*.xml files.
-- mangrep:   Greps on all local AndroidManifest.xml files.
-- mgrep:     Greps on all local Makefiles files.
-- sepgrep:   Greps on all local sepolicy files.
-- sgrep:     Greps on all local source files.
-- godir:     Go to the directory containing a file.
-
-EOF
-
-    __print_phenom_functions_help
 
 export HMM_DESCRIPTIVE=(
 "lunch:   lunch <product_name>-<build_variant>"
@@ -59,64 +33,11 @@ export HMM_DESCRIPTIVE=(
 function hmm() {
     T=$(gettop)
 
-Look at the source to view more functions. The complete list is:
-EOF
-    local T=$(gettop)
-    local A=""
-    local i
-    for i in `cat $T/build/envsetup.sh $T/vendor/phenom/build/envsetup.sh | sed -n "/^[[:blank:]]*function /s/function \([a-z_]*\).*/\1/p" | sort | uniq`; do
-      A="$A $i"
     echo "Invoke \". build/envsetup.sh\" from your shell to add the following functions to your environment:"
     for c in ${!HMM_DESCRIPTIVE[*]}; do
         echo -e "- ${HMM_DESCRIPTIVE[$c]}"
     done
 
-# Get all the build variables needed by this script in a single call to the build system.
-function build_build_var_cache()
-{
-    local T=$(gettop)
-    # Grep out the variable names from the script.
-    cached_vars=`cat $T/build/envsetup.sh $T/vendor/phenom/build/envsetup.sh | tr '()' '  ' | awk '{for(i=1;i<=NF;i++) if($i~/get_build_var/) print $(i+1)}' | sort -u | tr '\n' ' '`
-    cached_abs_vars=`cat $T/build/envsetup.sh $T/vendor/phenom/build/envsetup.sh | tr '()' '  ' | awk '{for(i=1;i<=NF;i++) if($i~/get_abs_build_var/) print $(i+1)}' | sort -u | tr '\n' ' '`
-    # Call the build system to dump the "<val>=<value>" pairs as a shell script.
-    build_dicts_script=`\cd $T; CALLED_FROM_SETUP=true BUILD_SYSTEM=build/core \
-                        command make --no-print-directory -f build/core/config.mk \
-                        dump-many-vars \
-                        DUMP_MANY_VARS="$cached_vars" \
-                        DUMP_MANY_ABS_VARS="$cached_abs_vars" \
-                        DUMP_VAR_PREFIX="var_cache_" \
-                        DUMP_ABS_VAR_PREFIX="abs_var_cache_"`
-    local ret=$?
-    if [ $ret -ne 0 ]
-    then
-        unset build_dicts_script
-        return $ret
-    fi
-    # Excute the script to store the "<val>=<value>" pairs as shell variables.
-    eval "$build_dicts_script"
-    ret=$?
-    unset build_dicts_script
-    if [ $ret -ne 0 ]
-    then
-        return $ret
-    fi
-    BUILD_VAR_CACHE_READY="true"
-}
-
-# Delete the build var cache, so that we can still call into the build system
-# to get build variables not listed in this script.
-function destroy_build_var_cache()
-{
-    unset BUILD_VAR_CACHE_READY
-    local v
-    for v in $cached_vars; do
-      unset var_cache_$v
-    done
-    unset cached_vars
-    for v in $cached_abs_vars; do
-      unset abs_var_cache_$v
-    done
-    unset cached_abs_vars
     echo
     echo "Look at the source to view more functions. The complete list is:"
     for i in `cat $T/build/envsetup.sh | sed -n "/^[ \t]*function /s/function \([a-z_]*\).*/\1/p" | sort | uniq`; do
@@ -575,6 +496,16 @@ function print_lunch_menu()
     echo ""
     tput setaf 1;
     tput bold;
+    echo "  ▄████ ▒███████▒ ▒█████    ██████  ██▓███  "
+    echo " ██▒ ▀█▒▒ ▒ ▒ ▄▀░▒██▒  ██▒▒██    ▒ ▓██░  ██▒"
+    echo "▒██░▄▄▄░░ ▒ ▄▀▒░ ▒██░  ██▒░ ▓██▄   ▓██░ ██▓▒"
+    echo "░▓█  ██▓  ▄▀▒   ░▒██   ██░  ▒   ██▒▒██▄█▓▒ ▒"
+    echo "░▒▓███▀▒▒███████▒░ ████▓▒░▒██████▒▒▒██▒ ░  ░"
+    echo " ░▒   ▒ ░▒▒ ▓░▒░▒░ ▒░▒░▒░ ▒ ▒▓▒ ▒ ░▒▓▒░ ░  ░"
+    echo "  ░   ░ ░░▒ ▒ ░ ▒  ░ ▒ ▒░ ░ ░▒  ░ ░░▒ ░     "
+    echo "░ ░   ░ ░ ░ ░ ░ ░░ ░ ░ ▒  ░  ░  ░  ░░       "
+    echo "      ░   ░ ░        ░ ░        ░           "
+    echo "        ░                                   "
     tput sgr0;
     echo ""
     echo "                      Welcome to the device menu                      "
@@ -694,7 +625,7 @@ function lunch()
     check_product $product
     if [ $? -ne 0 ]
     then
-        # if we can't find a product, try to grab it off the Phenom GitHub
+        # if we can't find a product, try to grab it off the Gzosp GitHub
         T=$(gettop)
         cd $T > /dev/null
         vendor/phenom/build/tools/roomservice.py $product
