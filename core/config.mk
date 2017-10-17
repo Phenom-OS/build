@@ -893,7 +893,7 @@ include $(BUILD_SYSTEM)/ninja_config.mk
 include $(BUILD_SYSTEM)/soong_config.mk
 endif
 
-ifneq ($(PHENOM_BUILD),)
+ifneq ($(PhenomOS_BUILD),)
 ## We need to be sure the global selinux policies are included
 ## last, to avoid accidental resetting by device configs
 #$(eval include device/phenom/sepolicy/common/sepolicy.mk)

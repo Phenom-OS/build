@@ -2557,7 +2557,7 @@ endif
 ifeq ($(WITH_GMS),true)
     $(INTERNAL_OTA_PACKAGE_TARGET): backuptool := false
 else
-ifneq ($(PHENOM_BUILD),)
+ifneq ($(PhenomOS_BUILD),)
     $(INTERNAL_OTA_PACKAGE_TARGET): backuptool := true
 else
     $(INTERNAL_OTA_PACKAGE_TARGET): backuptool := false
@@ -2577,20 +2577,20 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) \
 	   $(if $(OEM_OTA_CONFIG), -o $(OEM_OTA_CONFIG)) \
 	   $(BUILT_TARGET_FILES_PACKAGE) $@
 
-PHENOM_TARGET_PACKAGE := $(PRODUCT_OUT)/$(PHENOM_VERSION).zip
+PhenomOS_TARGET_PACKAGE := $(PRODUCT_OUT)/$(PhenomOS_VERSION).zip
 
 .PHONY: otapackage bacon phenom
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
 bacon: otapackage
-	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(PHENOM_TARGET_PACKAGE)
-	$(hide) $(MD5SUM) $(PHENOM_TARGET_PACKAGE) > $(PHENOM_TARGET_PACKAGE).md5sum
-	@echo -e "Package complete: $(PHENOM_TARGET_PACKAGE)"
+	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(PhenomOS_TARGET_PACKAGE)
+	$(hide) $(MD5SUM) $(PhenomOS_TARGET_PACKAGE) > $(PhenomOS_TARGET_PACKAGE).md5sum
+	@echo -e "Package complete: $(PhenomOS_TARGET_PACKAGE)"
 phenom: otapackage
-	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(PHENOM_TARGET_PACKAGE)
-	$(hide) $(MD5SUM) $(PHENOM_TARGET_PACKAGE) > $(PHENOM_TARGET_PACKAGE).md5sum
+	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(PhenomOS_TARGET_PACKAGE)
+	$(hide) $(MD5SUM) $(PhenomOS_TARGET_PACKAGE) > $(PhenomOS_TARGET_PACKAGE).md5sum
 	@echo -e ${CL_RED}""${CL_RED}
 	@echo -e ${CL_RED}"  PHENOM OPEN SOURCE PROJECT  "${CL_RED}
-	@echo -e "Package complete: $(PHENOM_TARGET_PACKAGE)"
+	@echo -e "Package complete: $(PhenomOS_TARGET_PACKAGE)"
 
 endif    # build_ota_package
 

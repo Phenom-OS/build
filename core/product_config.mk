@@ -180,8 +180,8 @@ include $(BUILD_SYSTEM)/product.mk
 include $(BUILD_SYSTEM)/device.mk
 
 # A Phenom build needs only the Phenom product makefiles.
-ifneq ($(PHENOM_BUILD),)
-  all_product_configs := $(shell find device -path "*/$(PHENOM_BUILD)/phenom.mk")
+ifneq ($(PhenomOS_BUILD),)
+  all_product_configs := $(shell find device -path "*/$(PhenomOS_BUILD)/phenom.mk")
 else
   ifneq ($(strip $(TARGET_BUILD_APPS)),)
   # An unbundled app build needs only the core product makefiles.
@@ -192,9 +192,9 @@ else
   # files in the tree.
   all_product_configs := $(get-all-product-makefiles)
   endif # TARGET_BUILD_APPS
-endif # PHENOM_BUILD
+endif # PhenomOS_BUILD
 
-ifeq ($(PHENOM_BUILD),)
+ifeq ($(PhenomOS_BUILD),)
 all_named_products :=
 
 # Find the product config makefile for the current product.

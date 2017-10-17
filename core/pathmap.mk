@@ -99,6 +99,6 @@ FRAMEWORKS_BASE_SUBDIRS := \
 FRAMEWORKS_BASE_JAVA_SRC_DIRS := \
 	$(addprefix frameworks/base/,$(FRAMEWORKS_BASE_SUBDIRS))
 
-ifneq ($(PHENOM_BUILD),)
+ifneq ($(PhenomOS_BUILD),)
 -include $(TOPDIR)vendor/phenom/build/core/pathmap.mk
 endif

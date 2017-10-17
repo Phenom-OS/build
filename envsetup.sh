@@ -78,12 +78,12 @@ function check_product()
         return
     fi
     if (echo -n $1 | grep -q -e "^phenom_") ; then
-        PHENOM_BUILD=$(echo -n $1 | sed -e 's/^phenom_//g')
-        export BUILD_NUMBER=$( (date +%s%N ; echo $PHENOM_BUILD; hostname) | openssl sha1 | sed -e 's/.*=//g; s/ //g' | cut -c1-10 )
+        PhenomOS_BUILD=$(echo -n $1 | sed -e 's/^phenom_//g')
+        export BUILD_NUMBER=$( (date +%s%N ; echo $PhenomOS_BUILD; hostname) | openssl sha1 | sed -e 's/.*=//g; s/ //g' | cut -c1-10 )
     else
-        PHENOM_BUILD=
+        PhenomOS_BUILD=
     fi
-    export PHENOM_BUILD
+    export PhenomOS_BUILD
 
         TARGET_PRODUCT=$1 \
         TARGET_BUILD_VARIANT= \
@@ -514,7 +514,7 @@ function print_lunch_menu()
         i=$(($i+1))
     done | column
 
-    if [ "z${PHENOM_DEVICES_ONLY}" != "z" ]; then
+    if [ "z${PhenomOS_DEVICES_ONLY}" != "z" ]; then
        echo "... and don't forget the bacon!"
     fi
 
@@ -543,7 +543,7 @@ function breakfast()
 {
     target=$1
     local variant=$2
-    PHENOM_DEVICES_ONLY="true"
+    PhenomOS_DEVICES_ONLY="true"
     unset LUNCH_MENU_CHOICES
     add_lunch_combo full-eng
     for f in `/bin/ls vendor/phenom/vendorsetup.sh 2> /dev/null`
@@ -562,7 +562,7 @@ function breakfast()
             # A buildtype was specified, assume a full device name
             lunch $target
         else
-            # This is probably just the PHENOM model name
+            # This is probably just the PhenomOS model name
             if [ -z "$variant" ]; then
                 variant="userdebug"
             fi
@@ -1637,7 +1637,7 @@ function repopick() {
 function fixup_common_out_dir() {
     common_out_dir=$(get_build_var OUT_DIR)/target/common
     target_device=$(get_build_var TARGET_DEVICE)
-    if [ ! -z $PHENOM_FIXUP_COMMON_OUT ]; then
+    if [ ! -z $PhenomOS_FIXUP_COMMON_OUT ]; then
         if [ -d ${common_out_dir} ] && [ ! -L ${common_out_dir} ]; then
             mv ${common_out_dir} ${common_out_dir}-${target_device}
             ln -s ${common_out_dir}-${target_device} ${common_out_dir}
@@ -1682,7 +1682,7 @@ function installboot()
     sleep 1
     adb wait-for-online shell mount /system 2>&1 > /dev/null
     adb wait-for-online remount
-    if (adb shell getprop ro.phenom.device | grep -q "$PHENOM_BUILD");
+    if (adb shell getprop ro.phenom.device | grep -q "$PhenomOS_BUILD");
     then
         adb push $OUT/boot.img /cache/
         for i in $OUT/system/lib/modules/*;
@@ -1693,7 +1693,7 @@ function installboot()
         adb shell chmod 644 /system/lib/modules/*
         echo "Installation complete."
     else
-        echo "The connected device does not appear to be $PHENOM_BUILD, run away!"
+        echo "The connected device does not appear to be $PhenomOS_BUILD, run away!"
     fi
 }
 
@@ -1727,13 +1727,13 @@ function installrecovery()
     sleep 1
     adb wait-for-online shell mount /system 2>&1 > /dev/null
     adb wait-for-online remount
-    if (adb shell getprop ro.phenom.device | grep -q "$PHENOM_BUILD");
+    if (adb shell getprop ro.phenom.device | grep -q "$PhenomOS_BUILD");
     then
         adb push $OUT/recovery.img /cache/
         adb shell dd if=/cache/recovery.img of=$PARTITION
         echo "Installation complete."
     else
-        echo "The connected device does not appear to be $PHENOM_BUILD, run away!"
+        echo "The connected device does not appear to be $PhenomOS_BUILD, run away!"
     fi
 }
 
@@ -1753,7 +1753,7 @@ function dopush()
         echo "Device Found."
     fi
 
-    if (adb shell getprop ro.phenom.device | grep -q "$PHENOM_BUILD") || [ "$FORCE_PUSH" == "true" ];
+    if (adb shell getprop ro.phenom.device | grep -q "$PhenomOS_BUILD") || [ "$FORCE_PUSH" == "true" ];
     then
     # retrieve IP and PORT info if we're using a TCP connection
     TCPIPPORT=$(adb devices | egrep '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+[^0-9]+' \
@@ -1857,7 +1857,7 @@ EOF
     rm -f $OUT/.log
     return 0
     else
-        echo "The connected device does not appear to be $PHENOM_BUILD, run away!"
+        echo "The connected device does not appear to be $PhenomOS_BUILD, run away!"
     fi
 }
 
